@@ -36,6 +36,7 @@ final class Fatal
 		System.exit(1);
 	}
 	
+	// XXX: check
 	public static void doubleSingleDash ()
 	{
 		final String msg =
@@ -67,10 +68,11 @@ public final class Jxa
 	 */
 	private static final int[] ids = new int[26 + 26 + 10];
 	
+	private static JxaFlag lastVisited = null;
+	
 	public static void parse (String[] args, JxaFlag[] flags)
 	{
 		checkShortNames(flags);
-		
 		boolean endOfArgs = false;
 		
 		for (int i = 0; i < args.length; i++)
@@ -92,9 +94,12 @@ public final class Jxa
 			}
 			else if (arg.startsWith("-"))
 			{
-				handleShort(arg);
+				handleShort(arg, flags);
 			}
-			
+			else
+			{
+				handleFreeWord(arg);
+			}
 		}
 	}
 	
@@ -132,7 +137,7 @@ public final class Jxa
 		/* TODO */
 	}
 	
-	private static void handleShort (String arg)
+	private static void handleShort (String arg, JxaFlag[] flags)
 	{
 		if (arg.length() == 1) { Fatal.doubleSingleDash(); }
 		final char id = arg.charAt(1);
@@ -140,11 +145,22 @@ public final class Jxa
 		final int key = getIdKey(id);
 		if (ids[key] == 0) { Fatal.undefinedFlag(arg); }
 		
+		final int actualPos = ids[key] - 1;
+		lastVisited = flags[actualPos];
 	}
 	
 	private static void readFromStdin ()
 	{
 		/* TODO */
+	}
+	
+	private static void handleFreeWord (String given)
+	{
+		if (lastVisited != null && lastVisited.getNeeds() != JxaFlag.FlagArg.NON)
+		{
+			
+		}
+		else { posArguments.add(given); }
 	}
 }
 

@@ -15,8 +15,9 @@ public final class JxaFlag
 		MAY
 	};
 	
-	private final String   longName;
-	private final char     shortName;
+	private final String  longName;
+	private       String  argument = null;
+	private final char    shortName;
 	private final FlagArg needs;
 	
 	public JxaFlag (String longName, char shortName, FlagArg needs)
@@ -26,7 +27,18 @@ public final class JxaFlag
 		this.shortName = shortName;
 	}
 	
+	public JxaFlag (String longName, char shortName, FlagArg needs, String defArg)
+	{
+		this.longName  = longName;
+		this.needs     = needs;
+		this.shortName = shortName;
+		this.argument  = defArg;
+	}
+	
 	public String getLongName () { return this.longName; }
 	public char getShortName ()  { return this.shortName; }
 	public FlagArg getNeeds ()   { return this.needs; }
+	public String getArgument () { return this.argument; }
+	
+	public void setArgument (String arg) { this.argument = arg; }
 }
