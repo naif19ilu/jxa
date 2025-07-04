@@ -28,5 +28,5 @@ public final class JxaFlag
 	
 	public String getLongName () { return this.longName; }
 	public char getShortName ()  { return this.shortName; }
-	public FlagArg getNeeds ()  { return this.needs; }
+	public FlagArg getNeeds ()   { return this.needs; }
 }
