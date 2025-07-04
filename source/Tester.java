@@ -12,9 +12,9 @@ public class Tester
 	{
 		final JxaFlag[] flags =
 		{
-			new JxaFlag("document", '9', JxaFlag.FlagArg.YES),
-			new JxaFlag("usage",    'a', JxaFlag.FlagArg.MAY),
-			new JxaFlag("verbose",  'Z', JxaFlag.FlagArg.NON)
+			new JxaFlag("document", 'd', JxaFlag.FlagArg.YES),
+			new JxaFlag("usage",    'd', JxaFlag.FlagArg.MAY),
+			new JxaFlag("verbose",  'v', JxaFlag.FlagArg.NON)
 		};
 		Jxa.parse(args, flags);
 	}
