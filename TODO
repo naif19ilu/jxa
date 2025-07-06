@@ -6,7 +6,6 @@
 	[x] handle long names
 	[x] handle positional arguments
 	[x] --flag=value
-	[ ] handle stdin
-	[ ] self documented
+	[x] self documented
 	[ ] test
 	

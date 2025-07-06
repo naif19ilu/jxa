@@ -12,13 +12,12 @@ public class Tester
 	{
 		final JxaFlag[] flags =
 		{
-			new JxaFlag("document", 'd', JxaFlag.FlagArg.YES),
-			new JxaFlag("usage",    'u', JxaFlag.FlagArg.MAY),
-			new JxaFlag("verbose",  'v', JxaFlag.FlagArg.NON)
+			new JxaFlag("document", 'd', JxaFlag.FlagArg.YES, "specifies document"),
+			new JxaFlag("usage",    'u', JxaFlag.FlagArg.MAY, "prints program's usage or flag's usage if indicated"),
+			new JxaFlag("verbose",  'v', JxaFlag.FlagArg.NON, "displays operations as they happen")
 		};
 		Jxa.parse(args, flags);
-		
-		
+
 		System.out.println("flags:");
 		for (int i = 0; i < flags.length; i++)
 		{
@@ -30,6 +29,8 @@ public class Tester
 		{	
 			System.out.println(Jxa.posArguments.get(i));
 		}
+		
+		JxaDoc.printUsage("jxa", flags);
 	}
 }
 
