@@ -3,7 +3,8 @@
 	[x] handle error
 	[x] handle undefined flags
 	[x] handle short names
-	[ ] handle long names
+	[x] handle long names
 	[x] handle positional arguments
+	[ ] handle stdin
 	[ ] test
 	

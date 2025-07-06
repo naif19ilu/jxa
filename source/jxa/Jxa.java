@@ -8,6 +8,8 @@ package jxa;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 final class Fatal
 {
@@ -50,7 +52,7 @@ final class Fatal
 	{
 		final String msg = String.format(
 			"jxa::error: undefined flag provided\n" +
-			"  the program found '--%s' as an argument ,':|\n",
+			"  the program cannot recognize '--%s' as a flag ,':|\n",
 			given
 		);
 		System.err.print(msg);
@@ -61,7 +63,7 @@ final class Fatal
 	{
 		final String msg = String.format(
 			"jxa::error: undefined flag provided\n" +
-			"  the program found '-%c' as an argument ,':|\n",
+			"  the program cannot recognize '-%c' as a flag ,':|\n",
 			given
 		);
 		System.err.print(msg);
@@ -94,6 +96,17 @@ final class Fatal
 		System.err.print(msg);
 		System.exit(1);
 	}
+	
+	public static void duplicatedName (JxaFlag flag)
+	{	
+		final String msg = String.format(
+			"jxa::error: longname appears more than once\n" +
+			"  the program found that '--%s' longname is repeated\n",
+			flag.getLongName()
+		);
+		System.err.print(msg);
+		System.exit(1);
+	}
 }
 
 public final class Jxa
@@ -101,10 +114,15 @@ public final class Jxa
 	public static String stdin = "";
 	public static List<String> posArguments = new ArrayList<>();
 	
-	/* Saves the position where a certain id
+	/* Saves the position where a certain short-name
 	 * can be found within 'flags' array
 	 */
-	private static final int[] ids = new int[26 + 26 + 10];
+	private static final int[] quickShortNames = new int[26 + 26 + 10];
+	
+	/* Saves the position where a certain long-name
+	 * can be found within 'flags' array
+	 */
+	private static final Map<String, Integer> quickLongNames = new HashMap<>();
 	
 	/* This variable is only assigned to some actual flag
 	 * when the flag needs is different from JxaFlag.FlagArg.NON
@@ -113,7 +131,7 @@ public final class Jxa
 	
 	public static void parse (String[] args, JxaFlag[] flags)
 	{
-		checkShortNames(flags);
+		checkNames(flags);
 		boolean endOfArgs = false;
 		
 		for (int i = 0; i < args.length; i++)
@@ -145,7 +163,7 @@ public final class Jxa
 			else if (arg.startsWith("--"))
 			{
 				makeSureFlagHasItsArg();
-				handleLong();
+				handleLong(arg, flags);
 			}
 			else if (arg.startsWith("-"))
 			{
@@ -163,10 +181,10 @@ public final class Jxa
 		makeSureFlagHasItsArg();
 	}
 	
-	/* Makes sure there are not repeated IDs
-	 * TODO: Figure out a way to store long names as well for O(1) access
+	/* Makes sure there are not repeated IDs nor
+	 * duplicated long names
 	 */
-	private static void checkShortNames (JxaFlag[] flags)
+	private static void checkNames (JxaFlag[] flags)
 	{
 		for (int i = 0; i < flags.length; i++)
 		{
@@ -177,12 +195,19 @@ public final class Jxa
 			{
 				Fatal.invalidId(flags[i]);
 			}
-			if (ids[key] != 0)
+			if (quickShortNames[key] != 0)
 			{
-				Fatal.duplicatedId(ids[key] - 1, i, flags);
+				Fatal.duplicatedId(quickShortNames[key] - 1, i, flags);
 			}
 			
-			ids[key] = i + 1;
+			final String longname = flags[i].getLongName();
+			if (quickLongNames.containsKey(longname))
+			{
+				Fatal.duplicatedName(flags[i]);
+			}
+			
+			quickShortNames[key] = i + 1;	
+			quickLongNames.put(longname, i);
 		}
 	}
 	
@@ -195,9 +220,16 @@ public final class Jxa
 		return -1;
 	}
 	
-	private static void handleLong ()
+	private static void handleLong (String longName, JxaFlag[] flags)
 	{
-		/* TODO */
+		final String rmDashes = longName.substring(2);
+		
+		final int at = quickLongNames.getOrDefault(rmDashes, -1);
+		if (at == -1) { Fatal.undefinedFlag(rmDashes); }
+		
+		thisFlag = flags[at];
+		thisFlag.setSeen(true);
+		thisFlag.setArgument("");
 	}
 	
 	private static void handleShort (String arg, JxaFlag[] flags)
@@ -209,7 +241,7 @@ public final class Jxa
 		{
 			final char thisId =  arg.charAt(i);
 			final int key = getIdKey(thisId);
-			final int locatedAt = ids[key];
+			final int locatedAt = quickShortNames[key];
 			
 			if (locatedAt == 0) { Fatal.undefinedFlag(thisId); }
 			JxaFlag flag = flags[locatedAt - 1];
