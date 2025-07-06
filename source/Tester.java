@@ -17,6 +17,19 @@ public class Tester
 			new JxaFlag("verbose",  'v', JxaFlag.FlagArg.NON)
 		};
 		Jxa.parse(args, flags);
+		
+		
+		System.out.println("flags:");
+		for (int i = 0; i < flags.length; i++)
+		{
+			System.out.println(flags[i].getLongName() + ":" + flags[i].getSeen() + " > " + flags[i].getArgument());
+		}
+
+		System.out.println("-*-\npos args:");
+		for (int i  = 0; i < Jxa.posArguments.size(); i++)
+		{	
+			System.out.println(Jxa.posArguments.get(i));
+		}
 	}
 }
 

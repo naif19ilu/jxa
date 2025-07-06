@@ -16,10 +16,11 @@ public final class JxaFlag
 	};
 	
 	private final String  longName;
-	private       String  argument;
 	private final char    shortName;
 	private final FlagArg needs;
-	private boolean       seen = false;
+
+	private boolean seen     = false;
+	private String  argument = "";
 	
 	public JxaFlag (String longName, char shortName, FlagArg needs)
 	{

@@ -68,7 +68,6 @@ final class Fatal
 		System.exit(1);
 	}
 	
-	// XXX: check
 	public static void groupedArgedFlags (String given, char first, char second)
 	{
 		final String msg = String.format(
@@ -84,11 +83,22 @@ final class Fatal
 		System.err.print(msg);
 		System.exit(1);
 	}
+	
+	public static void missingArgument (JxaFlag flag)
+	{
+		final String msg = String.format(
+			"jxa::error: flag is missing its argument\n" +
+			"  the program found that '--%s' has no argument, please provide it\n",
+			flag.getLongName()
+		);
+		System.err.print(msg);
+		System.exit(1);
+	}
 }
 
 public final class Jxa
 {
-	public static String stdin;
+	public static String stdin = "";
 	public static List<String> posArguments = new ArrayList<>();
 	
 	/* Saves the position where a certain id
@@ -96,7 +106,10 @@ public final class Jxa
 	 */
 	private static final int[] ids = new int[26 + 26 + 10];
 	
-	private static JxaFlag lastVisited = null;
+	/* This variable is only assigned to some actual flag
+	 * when the flag needs is different from JxaFlag.FlagArg.NON
+	 */
+	private static JxaFlag thisFlag = null;
 	
 	public static void parse (String[] args, JxaFlag[] flags)
 	{
@@ -107,13 +120,18 @@ public final class Jxa
 		{
 			final String arg = args[i];
 			
+			if (endOfArgs)
+			{
+				posArguments.add(arg);
+				continue;
+			}
 			/* Once '--' is found anything that comes after
 			 * will be treated as a positional argument (UNIX standard)
 			 */
-			if (arg.equals("--"))
+			else if (arg.equals("--"))
 			{
-				if (endOfArgs == false) { endOfArgs = true; continue; }
-				posArguments.add(arg);
+				makeSureFlagHasItsArg();
+				if (endOfArgs == false) { endOfArgs = true; }
 			}
 			/* In UNIX when a single dash is found, the program
 			 * will have to read from STDIN and treat it as an argument
@@ -121,14 +139,17 @@ public final class Jxa
 			else if (arg.equals("-"))
 			{
 				if (stdin.isEmpty() == false) { Fatal.doubleSingleDash(); }
+				makeSureFlagHasItsArg();
 				handleStdin();
 			}
 			else if (arg.startsWith("--"))
 			{
+				makeSureFlagHasItsArg();
 				handleLong();
 			}
 			else if (arg.startsWith("-"))
 			{
+				makeSureFlagHasItsArg();
 				handleShort(arg, flags);
 			}
 			/* A 'free word' means anything that is not a flag
@@ -139,6 +160,7 @@ public final class Jxa
 				handleFreeWord(arg);
 			}
 		}
+		makeSureFlagHasItsArg();
 	}
 	
 	/* Makes sure there are not repeated IDs
@@ -203,6 +225,12 @@ public final class Jxa
 			{
 				theresOneWhichTakesArgAlready = true;
 				firstTakingArg = thisId;
+
+				thisFlag = flag;
+				/* Reset the argument of this flag since it could be
+				 * repeated in the argument list
+				 */
+				thisFlag.setArgument("");
 			}
 		}
 	}
@@ -214,7 +242,16 @@ public final class Jxa
 	
 	private static void handleFreeWord (String given)
 	{
-		/* TODO */
+		if (thisFlag != null) { thisFlag.setArgument(given); thisFlag = null; }	
+		else { posArguments.add(given); }
+	}		
+	
+	private static void makeSureFlagHasItsArg ()
+	{
+		if (thisFlag != null && thisFlag.getNeeds() == JxaFlag.FlagArg.YES && thisFlag.getArgument().isEmpty())
+		{
+			Fatal.missingArgument(thisFlag);
+		}
 	}
 }
 

@@ -2,8 +2,8 @@
 	[x] check for duplicated IDs
 	[x] handle error
 	[x] handle undefined flags
-	[ ] handle short names
+	[x] handle short names
 	[ ] handle long names
-	[ ] handle positional arguments
+	[x] handle positional arguments
 	[ ] test
 	
