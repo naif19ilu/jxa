@@ -16,9 +16,10 @@ public final class JxaFlag
 	};
 	
 	private final String  longName;
-	private       String  argument = null;
+	private       String  argument;
 	private final char    shortName;
 	private final FlagArg needs;
+	private boolean       seen = false;
 	
 	public JxaFlag (String longName, char shortName, FlagArg needs)
 	{
@@ -39,6 +40,8 @@ public final class JxaFlag
 	public char getShortName ()  { return this.shortName; }
 	public FlagArg getNeeds ()   { return this.needs; }
 	public String getArgument () { return this.argument; }
+	public boolean getSeen ()    { return this.seen; }
 	
 	public void setArgument (String arg) { this.argument = arg; }
+	public void setSeen (boolean seen) { this.seen = seen; }
 }

@@ -41,7 +41,7 @@ final class Fatal
 	{
 		final String msg =
 			"jxa::error: double single dash option provided\n" +
-		     "  the '-' option can only be used once\n";
+			"  the '-' option can only be used once\n";
 		System.err.print(msg);
 		System.exit(1);
 	}
@@ -50,8 +50,36 @@ final class Fatal
 	{
 		final String msg = String.format(
 			"jxa::error: undefined flag provided\n" +
-			"  the program found '%s' as an argument ,':|\n",
+			"  the program found '--%s' as an argument ,':|\n",
 			given
+		);
+		System.err.print(msg);
+		System.exit(1);
+	}
+
+	public static void undefinedFlag (char given)
+	{
+		final String msg = String.format(
+			"jxa::error: undefined flag provided\n" +
+			"  the program found '-%c' as an argument ,':|\n",
+			given
+		);
+		System.err.print(msg);
+		System.exit(1);
+	}
+	
+	// XXX: check
+	public static void groupedArgedFlags (String given, char first, char second)
+	{
+		final String msg = String.format(
+			"jxa::error: more than one flag needs argument in this group\n" +
+			"  the program found '%s'; Both '-%c' and '-%c' takes argument\n" +
+			"  better do: -%c <arg> -%c <arg> ...\n",
+			given,
+			first,
+			second,
+			first,
+			second
 		);
 		System.err.print(msg);
 		System.exit(1);
@@ -60,7 +88,7 @@ final class Fatal
 
 public final class Jxa
 {
-	public static String readFromStdin;
+	public static String stdin;
 	public static List<String> posArguments = new ArrayList<>();
 	
 	/* Saves the position where a certain id
@@ -79,14 +107,21 @@ public final class Jxa
 		{
 			final String arg = args[i];
 			
+			/* Once '--' is found anything that comes after
+			 * will be treated as a positional argument (UNIX standard)
+			 */
 			if (arg.equals("--"))
 			{
 				if (endOfArgs == false) { endOfArgs = true; continue; }
 				posArguments.add(arg);
 			}
-			else if (arg.equals("-") && readFromStdin.isEmpty())
+			/* In UNIX when a single dash is found, the program
+			 * will have to read from STDIN and treat it as an argument
+			 */
+			else if (arg.equals("-"))
 			{
-				readFromStdin();
+				if (stdin.isEmpty() == false) { Fatal.doubleSingleDash(); }
+				handleStdin();
 			}
 			else if (arg.startsWith("--"))
 			{
@@ -96,6 +131,9 @@ public final class Jxa
 			{
 				handleShort(arg, flags);
 			}
+			/* A 'free word' means anything that is not a flag
+			 * for example: 54 "hello java" etc (constant values)
+			 */
 			else
 			{
 				handleFreeWord(arg);
@@ -103,6 +141,9 @@ public final class Jxa
 		}
 	}
 	
+	/* Makes sure there are not repeated IDs
+	 * TODO: Figure out a way to store long names as well for O(1) access
+	 */
 	private static void checkShortNames (JxaFlag[] flags)
 	{
 		for (int i = 0; i < flags.length; i++)
@@ -139,30 +180,75 @@ public final class Jxa
 	
 	private static void handleShort (String arg, JxaFlag[] flags)
 	{
-		if (arg.length() == 1) { Fatal.doubleSingleDash(); }
-		final char id = arg.charAt(1);
+		boolean theresOneWhichTakesArgAlready = false;
+		char firstTakingArg = 0;
 		
-		final int key = getIdKey(id);
-		if (ids[key] == 0) { Fatal.undefinedFlag(arg); }
-		
-		final int actualPos = ids[key] - 1;
-		lastVisited = flags[actualPos];
+		for (int i = 1; i < arg.length(); i++)
+		{
+			final char thisId =  arg.charAt(i);
+			final int key = getIdKey(thisId);
+			final int locatedAt = ids[key];
+			
+			if (locatedAt == 0) { Fatal.undefinedFlag(thisId); }
+			JxaFlag flag = flags[locatedAt - 1];
+			
+			flag.setSeen(true);
+			
+			if (flag.getNeeds() != JxaFlag.FlagArg.NON && theresOneWhichTakesArgAlready)
+			{	
+				Fatal.groupedArgedFlags(arg, firstTakingArg, thisId);
+			}
+			
+			if (flag.getNeeds() != JxaFlag.FlagArg.NON)
+			{
+				theresOneWhichTakesArgAlready = true;
+				firstTakingArg = thisId;
+			}
+		}
 	}
 	
-	private static void readFromStdin ()
+	private static void handleStdin ()
 	{
 		/* TODO */
 	}
 	
 	private static void handleFreeWord (String given)
 	{
-		if (lastVisited != null && lastVisited.getNeeds() != JxaFlag.FlagArg.NON)
-		{
-			
-		}
-		else { posArguments.add(given); }
+		/* TODO */
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
