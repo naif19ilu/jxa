@@ -222,14 +222,22 @@ public final class Jxa
 	
 	private static void handleLong (String longName, JxaFlag[] flags)
 	{
-		final String rmDashes = longName.substring(2);
+		String rmDashes = longName.substring(2);
+		String arg = "";
+		
+		if (rmDashes.contains("="))
+		{
+			final int eqIndex = rmDashes.indexOf('=');
+			arg = (String) rmDashes.subSequence(eqIndex + 1, rmDashes.length());
+			rmDashes = rmDashes.substring(0, eqIndex);	
+		}
 		
 		final int at = quickLongNames.getOrDefault(rmDashes, -1);
 		if (at == -1) { Fatal.undefinedFlag(rmDashes); }
 		
 		thisFlag = flags[at];
 		thisFlag.setSeen(true);
-		thisFlag.setArgument("");
+		thisFlag.setArgument(arg);
 	}
 	
 	private static void handleShort (String arg, JxaFlag[] flags)
