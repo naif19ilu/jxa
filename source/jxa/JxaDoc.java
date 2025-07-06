@@ -13,6 +13,25 @@ public class JxaDoc {
 	
 	private static final String programsDesc = "here your description";
 	
+	/* If you as a programmer use this function i highly suggest you
+	 * to pipe this output to column GNU/Linux command for better reading
+	 * ... | column -t -s ':'
+	 */
+	public static void debugInfo (JxaFlag[] flags)
+	{
+		System.out.println("Flags");
+		for (int i = 0; i < flags.length; i++)
+		{
+			JxaFlag f = flags[i];
+			System.out.println("  " + f.getLongName() + ":" + f.getShortName() + ":" + f.getSeen() + ":" + f.getArgument());
+		}
+		System.out.println("\nPositional Arguments");
+		for (int i  = 0; i < Jxa.posArguments.size(); i++)
+		{	
+			System.out.println("  " + Jxa.posArguments.get(i));
+		}
+	}
+	
 	public static void printUsage (String programsName, JxaFlag[] flags)
 	{
 		getLongss(flags);

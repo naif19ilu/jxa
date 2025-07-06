@@ -122,7 +122,7 @@ public final class Jxa
 	private static void handleLong (String longName, JxaFlag[] flags)
 	{
 		String rmDashes = longName.substring(2);
-		String arg = "";
+		String arg = null;
 		
 		if (rmDashes.contains("="))
 		{
@@ -137,11 +137,14 @@ public final class Jxa
 		thisFlag = flags[at];
 		thisFlag.setSeen(true);
 
-		if (thisFlag.getNeeds() == JxaFlag.FlagArg.NON && arg.isEmpty() == false)
+		if (thisFlag.getNeeds() == JxaFlag.FlagArg.NON && arg != null)
 		{
 			JxaFatal.noNeedOfArg(rmDashes);
 		}
-		thisFlag.setArgument(arg);
+		if (arg != null)
+		{
+			thisFlag.setArgument(arg);
+		}
 	}
 	
 	private static void handleShort (String arg, JxaFlag[] flags)
@@ -169,12 +172,7 @@ public final class Jxa
 			{
 				theresOneWhichTakesArgAlready = true;
 				firstTakingArg = thisId;
-
 				thisFlag = flag;
-				/* Reset the argument of this flag since it could be
-				 * repeated in the argument list
-				 */
-				thisFlag.setArgument("");
 			}
 		}
 	}
