@@ -30,11 +30,14 @@ public final class Jxa
 	 */
 	private static JxaFlag thisFlag = null;
 	
-	public static void parse (String[] args, JxaFlag[] flags)
+	private static JxaFatal f;
+	
+	public static void parse (String programsName, String[] args, JxaFlag[] flags)
 	{
 		checkNames(flags);
+		f = new JxaFatal(programsName);
+
 		boolean endOfArgs = false;
-		
 		for (int i = 0; i < args.length; i++)
 		{
 			final String arg = args[i];
@@ -57,7 +60,7 @@ public final class Jxa
 			 */
 			else if (arg.equals("-"))
 			{
-				JxaFatal.unsupportedStdin();
+				f.unsupportedStdin();	
 			}
 			else if (arg.startsWith("--"))
 			{
@@ -92,17 +95,17 @@ public final class Jxa
 			
 			if (key == -1)
 			{
-				JxaFatal.invalidId(flags[i]);
+				f.invalidId(flags[i]);
 			}
 			if (quickShortNames[key] != 0)
 			{
-				JxaFatal.duplicatedId(quickShortNames[key] - 1, i, flags);
+				f.duplicatedId(quickShortNames[key] - 1, i, flags);
 			}
 			
 			final String longname = flags[i].getLongName();
 			if (quickLongNames.containsKey(longname))
 			{
-				JxaFatal.duplicatedName(flags[i]);
+				f.duplicatedName(flags[i]);
 			}
 			
 			quickShortNames[key] = i + 1;	
@@ -132,14 +135,14 @@ public final class Jxa
 		}
 		
 		final int at = quickLongNames.getOrDefault(rmDashes, -1);
-		if (at == -1) { JxaFatal.undefinedFlag(rmDashes); }
+		if (at == -1) { f.undefinedFlag(rmDashes); }
 		
 		thisFlag = flags[at];
 		thisFlag.setSeen(true);
 
 		if (thisFlag.getNeeds() == JxaFlag.FlagArg.NON && arg != null)
 		{
-			JxaFatal.noNeedOfArg(rmDashes);
+			f.noNeedOfArg(rmDashes);
 		}
 		if (arg != null)
 		{
@@ -158,14 +161,14 @@ public final class Jxa
 			final int key = getIdKey(thisId);
 			final int locatedAt = quickShortNames[key];
 			
-			if (locatedAt == 0) { JxaFatal.undefinedFlag(thisId); }
+			if (locatedAt == 0) { f.undefinedFlag(thisId); }
 			JxaFlag flag = flags[locatedAt - 1];
 			
 			flag.setSeen(true);
 			
 			if (flag.getNeeds() != JxaFlag.FlagArg.NON && theresOneWhichTakesArgAlready)
 			{	
-				JxaFatal.groupedArgedFlags(arg, firstTakingArg, thisId);
+				f.groupedArgedFlags(arg, firstTakingArg, thisId);
 			}
 			
 			if (flag.getNeeds() != JxaFlag.FlagArg.NON)
@@ -187,7 +190,7 @@ public final class Jxa
 	{
 		if (thisFlag != null && thisFlag.getNeeds() == JxaFlag.FlagArg.YES && thisFlag.getArgument().isEmpty())
 		{
-			JxaFatal.missingArgument(thisFlag);
+			f.missingArgument(thisFlag);
 		}
 	}
 }

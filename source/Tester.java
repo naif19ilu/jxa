@@ -33,8 +33,7 @@ public class Tester
 			new JxaFlag("license",       'L', JxaFlag.FlagArg.NON,    "prints license info and exits")
 		};
 
-		Jxa.parse(args, flags);	
+		Jxa.parse("tester", args, flags);	
 		JxaDoc.debugInfo(flags);
 	}
 }
-
