@@ -147,6 +147,7 @@ public final class Jxa
 		if (arg != null)
 		{
 			thisFlag.setArgument(arg);
+			thisFlag = null;
 		}
 	}
 	
@@ -159,6 +160,8 @@ public final class Jxa
 		{
 			final char thisId =  arg.charAt(i);
 			final int key = getIdKey(thisId);
+			
+			if (key == -1) { f.undefinedFlag(thisId); }
 			final int locatedAt = quickShortNames[key];
 			
 			if (locatedAt == 0) { f.undefinedFlag(thisId); }

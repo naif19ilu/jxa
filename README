@@ -1,7 +1,7 @@
 
     Jxa - Java executable arguments parser
 
-    This is a lightweight argument parser for Java program, it
+    This is a lightweight argument parser for Java programs, it
     is inspired in the 'getopt' header found in glibc.
 
     It allows the programmer to define flags their programs

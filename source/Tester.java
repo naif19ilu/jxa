@@ -35,5 +35,6 @@ public class Tester
 
 		Jxa.parse("tester", args, flags);	
 		JxaDoc.debugInfo(flags);
+		JxaDoc.printUsage("CLI argument parser", flags);
 	}
 }
