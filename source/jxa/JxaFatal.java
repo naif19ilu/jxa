@@ -1,9 +1,3 @@
-/*
- * jxa - Java executable arguments parser
- * Jul 5, 2025
- * Error handling
- */
-
 package jxa;
 
 public final class JxaFatal

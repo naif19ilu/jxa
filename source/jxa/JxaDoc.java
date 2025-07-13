@@ -1,9 +1,3 @@
-/*
- * jxa - Java executable arguments parser
- * Jul 5, 2025
- * Self documented programs :)
- */
-
 package jxa;
 
 public class JxaDoc {

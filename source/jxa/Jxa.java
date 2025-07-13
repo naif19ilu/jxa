@@ -1,9 +1,3 @@
-/*
- * jxa - Java executable arguments parser
- * Jul 4, 2025
- * Actual parser
- */
-
 package jxa;
 
 import java.util.List;

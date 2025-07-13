@@ -1,9 +1,3 @@
-/*
- * jxa - Java executable arguments parser
- * Jul 4, 2025
- * Defines a flag and its components
- */
-
 package jxa;
 
 public final class JxaFlag

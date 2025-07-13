@@ -1,9 +1,3 @@
-/*
- * jxa - Java executable arguments parser
- * Jul 4, 2025
- * Tester file
- */
-
 import jxa.*;
 
 public class Tester
