@@ -34,8 +34,8 @@ public final class Jxa
 	
 	public static void parse (String programsName, String[] args, JxaFlag[] flags)
 	{
-		checkNames(flags);
 		f = new JxaFatal(programsName);
+		checkNames(flags);
 
 		boolean endOfArgs = false;
 		for (int i = 0; i < args.length; i++)

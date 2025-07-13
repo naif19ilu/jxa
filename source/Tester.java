@@ -12,7 +12,7 @@ public class Tester
 	{
 		JxaFlag[] flags = new JxaFlag[] {
 			new JxaFlag("document",      'd', JxaFlag.FlagArg.YES,    "specifies the input document"),
-			new JxaFlag("verbose",       'v', JxaFlag.FlagArg.NON,    "enables verbose output"),
+			new JxaFlag("verbose",       'd', JxaFlag.FlagArg.NON,    "enables verbose output"),
 			new JxaFlag("usage",         'u', JxaFlag.FlagArg.MAY,    "prints usage or flag-specific help"),
 			new JxaFlag("interactive",   'i', JxaFlag.FlagArg.NON,    "runs program in interactive mode"),
 			new JxaFlag("output",        'o', JxaFlag.FlagArg.YES,    "defines output file path"),
