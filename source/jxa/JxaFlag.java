@@ -95,16 +95,13 @@ public class JxaFlag<T>
 		try
 		{
 			this.argument = (T) caster.apply(as);
+			this.argiven = true;
 		}
 		catch (NumberFormatException e)
 		{	
-			if (this.ifails_v == null)
-			{
-				this.ifails_f.accept(this, as);
-			}
-			this.argument = this.ifails_v;
+			if (this.ifails_v == null) { this.ifails_f.accept(this, as); }
+			else { this.argument = this.ifails_v; this.argiven = true; }
 		}
-		this.argiven = true;
 	}
 
 	public void setSeen2True ()
