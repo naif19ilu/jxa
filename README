@@ -15,7 +15,7 @@
     --flag=argument        long option with attached argument
     -f argument            short option with argument
     -abc                   grouped short options
-    --                     end of flag parsing (everything after is positional)
+    --                     end of flag parsing (everything after this is going to be taken as positional argument)
 
     For better understanding please see 'Tester.java' and play around
     with it :)
