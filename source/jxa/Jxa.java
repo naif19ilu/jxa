@@ -5,40 +5,40 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class Jxa
+public class Jxa
 {
-	public static List<String> posArguments = new ArrayList<>();
+	public static List<String> _posArguments = new ArrayList<>();
 	
 	/* Saves the position where a certain short-name
 	 * can be found within 'flags' array
 	 */
-	private static final int[] quickShortNames = new int[26 + 26 + 10];
+	private static final int[] _quickShortNames = new int[26 + 26 + 10];
 	
 	/* Saves the position where a certain long-name
 	 * can be found within 'flags' array
 	 */
-	private static final Map<String, Integer> quickLongNames = new HashMap<>();
+	private static final Map<String, Integer> _quickLongNames = new HashMap<>();
 	
 	/* This variable is only assigned to some actual flag
 	 * when the flag needs is different from JxaFlag.FlagArg.NON
 	 */
-	private static JxaFlag thisFlag = null;
+	private static JxaFlag<?> _thisFlag = null;
 	
-	private static JxaFatal f;
-	
-	public static void parse (String programsName, String[] args, JxaFlag[] flags)
+	private static JxaFatal _fatal;
+		
+	public static void parse (final String callername, JxaFlag<?> flags[], final String args[])
 	{
-		f = new JxaFatal(programsName);
-		checkNames(flags);
-
-		boolean endOfArgs = false;
+		_fatal = new JxaFatal(callername);	
+		_checkCorrectness(flags);
+		
+		boolean argends = false;
 		for (int i = 0; i < args.length; i++)
 		{
 			final String arg = args[i];
 			
-			if (endOfArgs)
+			if (argends)
 			{
-				posArguments.add(arg);
+				_posArguments.add(arg);
 				continue;
 			}
 			/* Once '--' is found anything that comes after
@@ -46,68 +46,66 @@ public final class Jxa
 			 */
 			else if (arg.equals("--"))
 			{
-				makeSureFlagHasItsArg();
-				if (endOfArgs == false) { endOfArgs = true; }
+				_makeSureFlagHasItsArg();
+				argends = true;
+				continue;
 			}
 			/* In UNIX when a single dash is found, the program
 			 * will have to read from STDIN and treat it as an argument
 			 */
 			else if (arg.equals("-"))
 			{
-				f.unsupportedStdin();	
+				_fatal.unsupportedStdin();	
 			}
 			else if (arg.startsWith("--"))
 			{
-				makeSureFlagHasItsArg();
-				handleLong(arg, flags);
+				_makeSureFlagHasItsArg();
+				_handleLong(arg, flags);
 			}
 			else if (arg.startsWith("-"))
 			{
-				makeSureFlagHasItsArg();
-				handleShort(arg, flags);
+				_makeSureFlagHasItsArg();
+				_handleShort(arg, flags);
 			}
 			/* A 'free word' means anything that is not a flag
 			 * for example: 54 "hello java" etc (constant values)
 			 */
 			else
 			{
-				handleFreeWord(arg);
+				_handleFreeWord(arg);
 			}
 		}
-		makeSureFlagHasItsArg();
-	}
+		_makeSureFlagHasItsArg();
+	}	
 	
-	/* Makes sure there are not repeated IDs nor
-	 * duplicated long names
-	 */
-	private static void checkNames (JxaFlag[] flags)
+	private static void _checkCorrectness (final JxaFlag<?>[] flags)
 	{
 		for (int i = 0; i < flags.length; i++)
 		{
-			final char id = flags[i].getShortName();
-			final int key = getIdKey(id);
+			final char id = flags[i].getShortname();
+			final int key = _getIdKey(id);
 			
 			if (key == -1)
 			{
-				f.invalidId(flags[i]);
+				_fatal.invalidId(flags[i]);
 			}
-			if (quickShortNames[key] != 0)
+			if (_quickShortNames[key] != 0)
 			{
-				f.duplicatedId(quickShortNames[key] - 1, i, flags);
+				_fatal.duplicatedId(_quickShortNames[key] - 1, i, flags);
 			}
 			
-			final String longname = flags[i].getLongName();
-			if (quickLongNames.containsKey(longname))
+			final String longname = flags[i].getLongname();
+			if (_quickLongNames.containsKey(longname))
 			{
-				f.duplicatedName(flags[i]);
+				_fatal.duplicatedName(flags[i]);
 			}
 			
-			quickShortNames[key] = i + 1;	
-			quickLongNames.put(longname, i);
+			_quickShortNames[key] = i + 1;	
+			_quickLongNames.put(longname, i);
 		}
 	}
 	
-	private static int getIdKey (char shortName)
+	private static int _getIdKey (char shortName)
 	{
 		if (Character.isDigit(shortName))     { return shortName - '0'; }
 		if (Character.isLowerCase(shortName)) { return shortName - 'a' + 10; }
@@ -115,8 +113,8 @@ public final class Jxa
 		
 		return -1;
 	}
-	
-	private static void handleLong (String longName, JxaFlag[] flags)
+
+	private static void _handleLong (String longName, JxaFlag<?>[] flags)
 	{
 		String rmDashes = longName.substring(2);
 		String arg = null;
@@ -128,24 +126,25 @@ public final class Jxa
 			rmDashes = rmDashes.substring(0, eqIndex);	
 		}
 		
-		final int at = quickLongNames.getOrDefault(rmDashes, -1);
-		if (at == -1) { f.undefinedFlag(rmDashes); }
+		final int at = _quickLongNames.getOrDefault(rmDashes, -1);
+		if (at == -1) { _fatal.undefinedFlag(rmDashes); }
 		
-		thisFlag = flags[at];
-		thisFlag.setSeen(true);
+		_thisFlag = flags[at];
+		_thisFlag.setSeen2True();
 
-		if (thisFlag.getNeeds() == JxaFlag.FlagArg.NON && arg != null)
+		if (_thisFlag.getArgTaker() == JxaFlag.arg.non)
 		{
-			f.noNeedOfArg(rmDashes);
+			if (arg != null) { _posArguments.add(arg); }
+			_thisFlag = null;
 		}
-		if (arg != null)
+		else if (arg != null)
 		{
-			thisFlag.setArgument(arg);
-			thisFlag = null;
+			_thisFlag.setArgument(arg);
+			_thisFlag = null;
 		}
 	}
 	
-	private static void handleShort (String arg, JxaFlag[] flags)
+	private static void _handleShort (String arg, JxaFlag<?>[] flags)
 	{
 		boolean theresOneWhichTakesArgAlready = false;
 		char firstTakingArg = 0;
@@ -153,41 +152,41 @@ public final class Jxa
 		for (int i = 1; i < arg.length(); i++)
 		{
 			final char thisId =  arg.charAt(i);
-			final int key = getIdKey(thisId);
+			final int key = _getIdKey(thisId);
 			
-			if (key == -1) { f.undefinedFlag(thisId); }
-			final int locatedAt = quickShortNames[key];
+			if (key == -1) { _fatal.undefinedFlag(thisId); }
+			final int locatedAt = _quickShortNames[key];
 			
-			if (locatedAt == 0) { f.undefinedFlag(thisId); }
-			JxaFlag flag = flags[locatedAt - 1];
+			if (locatedAt == 0) { _fatal.undefinedFlag(thisId); }
+			JxaFlag<?> flag = flags[locatedAt - 1];
 			
-			flag.setSeen(true);
+			flag.setSeen2True();
 			
-			if (flag.getNeeds() != JxaFlag.FlagArg.NON && theresOneWhichTakesArgAlready)
+			if (flag.getArgTaker() != JxaFlag.arg.non && theresOneWhichTakesArgAlready)
 			{	
-				f.groupedArgedFlags(arg, firstTakingArg, thisId);
+				_fatal.groupedArgedFlags(arg, firstTakingArg, thisId);
 			}
 			
-			if (flag.getNeeds() != JxaFlag.FlagArg.NON)
+			if (flag.getArgTaker() != JxaFlag.arg.non)
 			{
 				theresOneWhichTakesArgAlready = true;
 				firstTakingArg = thisId;
-				thisFlag = flag;
+				_thisFlag = flag;
 			}
 		}
 	}
 	
-	private static void handleFreeWord (String given)
+	private static void _handleFreeWord (String given)
 	{
-		if (thisFlag != null) { thisFlag.setArgument(given); thisFlag = null; }	
-		else { posArguments.add(given); }
+		if (_thisFlag != null) { _thisFlag.setArgument(given); _thisFlag = null; }	
+		else { _posArguments.add(given); }
 	}		
 	
-	private static void makeSureFlagHasItsArg ()
+	private static void _makeSureFlagHasItsArg ()
 	{
-		if (thisFlag != null && thisFlag.getNeeds() == JxaFlag.FlagArg.YES && thisFlag.getArgument().isEmpty())
+		if (_thisFlag != null && _thisFlag.getArgTaker() == JxaFlag.arg.yes && !_thisFlag.wasArgGiven())
 		{
-			f.missingArgument(thisFlag);
+			_fatal.missingArgument(_thisFlag);
 		}
 	}
 }

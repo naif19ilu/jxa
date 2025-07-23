@@ -9,28 +9,28 @@ public final class JxaFatal
 		this.pname = pname;
 	}
 	
-	public void duplicatedId (int first, int second, JxaFlag[] flags)
+	public void duplicatedId (final int first, final int second, final JxaFlag<?>[] flags)
 	{
 		final String msg = String.format(
 			"jxa::%s::error: duplicated id!\n" +
 			"  both '%s' and '%s' flags share same id '%c'\n",
 			this.pname,
-			flags[first].getLongName(),
-			flags[second].getLongName(),
-			flags[second].getShortName()
+			flags[first].getLongname(),
+			flags[second].getLongname(),
+			flags[second].getShortname()
 		);
 		System.err.print(msg);
 		System.exit(1);
 	}
 	
-	public void invalidId (JxaFlag flag)
+	public void invalidId (final JxaFlag<?> flag)
 	{
 		final String msg = String.format(
 			"jxa::%s::error: invalid id provided\n" +
 			"  the '%s' flag has an invalid id (%c)\n",
 			this.pname,
-			flag.getLongName(),
-			flag.getShortName()
+			flag.getLongname(),
+			flag.getLongname()
 		);
 		System.err.print(msg);
 		System.exit(1);
@@ -77,25 +77,25 @@ public final class JxaFatal
 		System.exit(1);
 	}
 	
-	public void missingArgument (JxaFlag flag)
+	public void missingArgument (final JxaFlag<?> flag)
 	{
 		final String msg = String.format(
 			"jxa::%s::error: flag is missing its argument\n" +
 			"  the program found that '--%s' has no argument, please provide it\n",
 			this.pname,
-			flag.getLongName()
+			flag.getLongname()
 		);
 		System.err.print(msg);
 		System.exit(1);
 	}
 	
-	public void duplicatedName (JxaFlag flag)
+	public void duplicatedName (final JxaFlag<?> flag)
 	{	
 		final String msg = String.format(
 			"jxa::%s::error: longname appears more than once\n" +
 			"  the program found that '--%s' longname is repeated\n",
 			this.pname,
-			flag.getLongName()
+			flag.getLongname()
 		);
 		System.err.print(msg);
 		System.exit(1);

@@ -1,74 +1,77 @@
 package jxa;
 
-public class JxaDoc {
+public class JxaDoc
+{
+	public static void mismatchedTypes (final JxaFlag<?> flag, final String given)
+	{
+	}
+
+	private static int _longestLongName = 0;
+	private static int _longestFlagDesc = 0;
 	
-	private static int longestLongName = 0;
-	private static int longestFlagDesc = 0;
-	
-	private static final String programsDesc = "here your description";
+	private static final String _programsDesc = "here your description";
 	
 	/* If you as a programmer use this function i highly suggest you
 	 * to pipe this output to column GNU/Linux command for better reading
 	 * ... | column -t -s ':'
 	 */
-	public static void debugInfo (JxaFlag[] flags)
+	public static void debugInfo (final JxaFlag<?>[] flags)
 	{
 		System.out.println("Flags");
 		for (int i = 0; i < flags.length; i++)
 		{
-			JxaFlag f = flags[i];
-			System.out.println("  " + f.getLongName() + ":" + f.getShortName() + ":" + f.getSeen() + ":" + f.getArgument());
+			JxaFlag<?> f = flags[i];
+			System.out.println("  " + f.getLongname() + ":" + f.getShortname() + ":" + f.wasSeen() + ":" + f.getArgument());
 		}
 		System.out.println("\nPositional Arguments");
-		for (int i  = 0; i < Jxa.posArguments.size(); i++)
+		for (int i  = 0; i < Jxa._posArguments.size(); i++)
 		{	
-			System.out.println("  " + Jxa.posArguments.get(i));
+			System.out.println("  " + Jxa._posArguments.get(i));
 		}
 	}
 	
-	public static void printUsage (String programsName, JxaFlag[] flags)
+	public static void printUsage (final String programsName, final JxaFlag<?>[] flags)
 	{
 		getLongss(flags);
-		longestFlagDesc += 2;
-		longestLongName += 2;
+		_longestFlagDesc += 2;
+		_longestLongName += 2;
 		
-		System.out.println("    \nUsage: " + programsName + " - " + programsDesc + "\n");
+		System.out.println("    \nUsage: " + programsName + " - " + _programsDesc + "\n");
 		System.out.println("    flags:");
 		for (int i = 0; i < flags.length; i++)
 		{
-			final JxaFlag f = flags[i];
+			final JxaFlag<?> f = flags[i];
 			final String fmt = String.format(
-				"      -%c or --%-" + longestLongName + "s" + "%-" + longestFlagDesc + "s - %s",
-				f.getShortName(),
-				f.getLongName(),
-				f.getDesc(),
-				getEnumAsStr(f.getNeeds())
+				"      -%c or --%-" + _longestLongName + "s" + "%-" + _longestFlagDesc + "s - %s",
+				f.getShortname(),
+				f.getLongname(),
+				f.getDescription(),
+				_getEnumAsStr(f.getArgTaker())
 			);
 			System.out.println(fmt);
 		}
 		System.out.println("");
 	}
 	
-	private static String getEnumAsStr (JxaFlag.FlagArg a)
+	private static String _getEnumAsStr (final JxaFlag.arg a)
 	{
 		switch (a)
 		{
-			case YES: return "needs argument";
-			case NON: return "does not require argument";
+			case yes: return "needs argument";
+			case non: return "does not require argument";
 			default:  return "argument is optional";
 		}
 	}
 	
-	private static void getLongss (JxaFlag[] flags)
+	private static void getLongss (final JxaFlag<?>[] flags)
 	{	
 		for (int i = 0; i < flags.length; i++)
 		{
-			final int nameLen = flags[i].getLongName().length();
-			final int descLen = flags[i].getDesc().length();
+			final int nameLen = flags[i].getLongname().length();
+			final int descLen = flags[i].getDescription().length();
 			
-			longestLongName = (longestLongName > nameLen) ? longestLongName : nameLen;
-			longestFlagDesc = (longestFlagDesc > descLen) ? longestFlagDesc : descLen;
+			_longestLongName = (_longestLongName > nameLen) ? _longestLongName : nameLen;
+			_longestFlagDesc = (_longestFlagDesc > descLen) ? _longestFlagDesc : descLen;
 		}
 	}	
 }
-
