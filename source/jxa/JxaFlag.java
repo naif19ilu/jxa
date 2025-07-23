@@ -18,7 +18,7 @@ public class JxaFlag<T>
 	final private arg    argtaker;
 
 	private T ifails_v = null;
-	private BiConsumer<JxaFlag<?>, String> ifails_f = JxaDoc::mismatchedTypes;
+	private BiConsumer<JxaFlag<?>, String> ifails_f = JxaFatal::mismatchedTypes;
 
 	private T argument;
 	private boolean seen = false;
@@ -30,6 +30,15 @@ public class JxaFlag<T>
 		this.description = description;
 		this.shortname = shortname;
 		this.argtaker = argtaker;
+	}
+
+	public JxaFlag (final String longname, final String description, final char shortname, final arg argtaker, final T defa)
+	{
+		this.longname = longname;
+		this.description = description;
+		this.shortname = shortname;
+		this.argtaker = argtaker;
+		this.argument = defa;
 	}
 	
 	public JxaFlag (final String longname, final String description, final char shortname, final arg argtaker, final T defa, final T ifails)

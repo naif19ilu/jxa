@@ -2,14 +2,8 @@ package jxa;
 
 public class JxaDoc
 {
-	public static void mismatchedTypes (final JxaFlag<?> flag, final String given)
-	{
-	}
-
 	private static int _longestLongName = 0;
 	private static int _longestFlagDesc = 0;
-	
-	private static final String _programsDesc = "here your description";
 	
 	/* If you as a programmer use this function i highly suggest you
 	 * to pipe this output to column GNU/Linux command for better reading
@@ -30,13 +24,13 @@ public class JxaDoc
 		}
 	}
 	
-	public static void printUsage (final String programsName, final JxaFlag<?>[] flags)
+	public static void printUsage (final JxaFlag<?>[] flags)
 	{
 		getLongss(flags);
 		_longestFlagDesc += 2;
 		_longestLongName += 2;
 		
-		System.out.println("    \nUsage: " + programsName + " - " + _programsDesc + "\n");
+		System.out.println("    \nUsage: " + JxaInfo.projectName + " - " + JxaInfo.projectDesc + "\n");
 		System.out.println("    flags:");
 		for (int i = 0; i < flags.length; i++)
 		{
