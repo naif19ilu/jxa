@@ -30,7 +30,7 @@ public class JxaDoc
 		_longestFlagDesc += 2;
 		_longestLongName += 2;
 		
-		System.out.println("    \nUsage: " + JxaInfo.projectName + " - " + JxaInfo.projectDesc + "\n");
+		System.out.println("    \nUsage: " + JxaInfo.projectName + " " + JxaInfo.exampleUsage + " : " + JxaInfo.projectDesc + "\n");
 		System.out.println("    flags:");
 		for (int i = 0; i < flags.length; i++)
 		{

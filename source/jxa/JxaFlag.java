@@ -90,7 +90,7 @@ public class JxaFlag<T>
 		else if (is == Long.class)   { caster = Long::valueOf; }
 		else if (is == Float.class)  { caster = Float::valueOf; }	
 		else if (is == Double.class) { caster = Double::valueOf; }
-		else { throw new IllegalArgumentException("PROGRAMMER: invalid type provided: " + is.toString()); }
+		else { throw new IllegalArgumentException("PROGRAMMER: invalid flag's type provided: " + is.toString()); }
 
 		try
 		{
